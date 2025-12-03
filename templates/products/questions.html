@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+<div class="section">
+    <div class="container">
+        <h2>Questions about {{ product.name }}</h2>
+
+        <div class="qa-container">
+            <div class="qa-form">
+                <h3>Ask a Question</h3>
+                {% if session.user_id %}
+                <form method="POST" action="{{ url_for('ask_question', product_id=product.id) }}">
+                    <div class="form-group">
+                        <textarea name="question" placeholder="Your question..." class="form-control" rows="3"
+                            required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Ask Question</button>
+                </form>
+                {% else %}
+                <p><a href="{{ url_for('login') }}">Login</a> to ask questions.</p>
+                {% endif %}
+            </div>
+
+            <div class="qa-list">
+                <h3>Questions & Answers</h3>
+                {% if questions %}
+                {% for q in questions %}
+                <div class="qa-item">
+                    <div class="question">
+                        <p><strong>Q:</strong> {{ q.question|safe }}</p>
+                        <small>Asked by {{ q.asker_username }} on {{ q.created_at.strftime('%Y-%m-%d') if q.created_at
+                            else 'N/A' }}</small>
+                    </div>
+
+                    {% if q.answer %}
+                    <div class="answer">
+                        <p><strong>A:</strong> {{ q.answer|safe }}</p>
+                        <small>Answered by {{ q.answerer_username }} on {{ q.answered_at.strftime('%Y-%m-%d') if
+                            q.answered_at else 'N/A' }}</small>
+                    </div>
+                    {% else %}
+                    {% if session.user_id %}
+                    <form method="POST" action="{{ url_for('answer_question', question_id=q.id) }}" class="answer-form">
+                        <textarea name="answer" placeholder="Your answer..." class="form-control" rows="2"
+                            required></textarea>
+                        <button type="submit" class="btn btn-sm btn-primary">Submit Answer</button>
+                    </form>
+                    {% endif %}
+                    {% endif %}
+                </div>
+                {% endfor %}
+                {% else %}
+                <p>No questions yet. Be the first to ask!</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn btn-outline">Back to Product</a>
+    </div>
+</div>
+{% endblock %}

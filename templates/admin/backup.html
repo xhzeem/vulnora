@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Backup - Admin{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <div class="admin-sidebar">
+        <h3>Admin Panel</h3>
+        <nav class="admin-nav">
+            <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('admin_users') }}">Users</a>
+            <a href="{{ url_for('admin_products') }}">Products</a>
+            <a href="{{ url_for('admin_health_check') }}">Health Check</a>
+            <a href="{{ url_for('admin_backup') }}" class="active">Backup</a>
+            <a href="{{ url_for('file_upload') }}">Upload Files</a>
+            <a href="{{ url_for('home') }}">← Back to Site</a>
+        </nav>
+    </div>
+
+    <div class="admin-content">
+        <h1>Database Backup</h1>
+        <p>Create a backup of the database</p>
+        <form method="POST" action="{{ url_for('admin_backup') }}" class="admin-form">
+            <div class="form-group">
+                <label for="filename">Backup Filename</label>
+                <input type="text" id="filename" name="filename" value="backup.sql" class="form-control"
+                    placeholder="backup.sql" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Create Backup</button>
+        </form>
+
+        {% if success %}
+        <div class="alert alert-success">
+            <p><strong>Backup created successfully!</strong></p>
+            <p>File: {{ filename }}</p>
+            {% if output %}
+            <pre>{{ output }}</pre>
+            {% endif %}
+        </div>
+        {% elif error %}
+        <div class="alert alert-danger">
+            <p><strong>Backup failed!</strong></p>
+            <pre>{{ error }}</pre>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

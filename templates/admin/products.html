@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Product Management - Admin{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <div class="admin-sidebar">
+        <h3>Admin Panel</h3>
+        <nav class="admin-nav">
+            <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('admin_users') }}">Users</a>
+            <a href="{{ url_for('admin_products') }}" class="active">Products</a>
+            <a href="{{ url_for('admin_health_check') }}">Health Check</a>
+            <a href="{{ url_for('admin_backup') }}">Backup</a>
+            <a href="{{ url_for('file_upload') }}">Upload Files</a>
+            <a href="{{ url_for('home') }}">← Back to Site</a>
+        </nav>
+    </div>
+
+    <div class="admin-content">
+        <h1>Product Management</h1>
+
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Cost</th>
+                    <th>Stock</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>{{ product.id }}</td>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.category_name or 'N/A' }}</td>
+                    <td>${{ "%.2f"|format(product.price) }}</td>
+                    <td>${{ "%.2f"|format(product.cost) }}</td>
+                    <td>{{ product.stock }}</td>
+                    <td>
+                        {% if product.is_active %}
+                        <span class="badge badge-success">Active</span>
+                        {% else %}
+                        <span class="badge badge-secondary">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ url_for('product_detail', product_id=product.id) }}"
+                            class="btn btn-sm btn-outline">View</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

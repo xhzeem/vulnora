@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+<div class="section">
+    <div class="container">
+        <div class="message-detail">
+            <h2>{{ message.subject }}</h2>
+
+            <div class="message-meta">
+                <p><strong>From:</strong> {{ message.sender_username }}</p>
+                <p><strong>To:</strong> {{ message.recipient_username }}</p>
+                <p><strong>Date:</strong> {{ message.created_at.strftime('%Y-%m-%d %H:%M') if message.created_at else
+                    'N/A' }}</p>
+            </div>
+
+            <div class="alert alert-danger">
+                <p>You can read ANY user's message by changing the ID!</p>
+            </div>
+
+            <div class="message-body">
+                {{ message.message|safe }}
+            </div>
+
+            <div class="message-actions">
+                <a href="{{ url_for('view_messages') }}" class="btn btn-outline">Back to Messages</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

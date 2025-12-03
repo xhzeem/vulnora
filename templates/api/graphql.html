@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+<div class="section">
+    <div class="container">
+        <h2>GraphQL API Explorer</h2>
+
+        <div class="alert alert-warning">
+        </div>
+
+        <div class="graphql-interface">
+            <form method="POST" action="{{ url_for('graphql_endpoint') }}">
+                <div class="form-group">
+                    <label>GraphQL Query</label>
+                    <textarea name="query" class="form-control" rows="10"
+                        placeholder="Enter your GraphQL query...">{ user(id: 1) { username, email } }</textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Execute Query</button>
+            </form>
+
+            <div class="query-examples">
+                <h4>Example Queries:</h4>
+                <ul>
+                    <li><code>{ user(id: 1) { username, email } }</code></li>
+                    <li><code>{ products { name, price } }</code></li>
+                    <li><code>{ user(id: 1 OR 1=1) { username } }</code> - SQL Injection!</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

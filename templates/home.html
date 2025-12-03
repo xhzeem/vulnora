@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container">
+        <div class="hero-content">
+            <h1>Welcome to Vulnora</h1>
+            <p class="hero-subtitle">Discover amazing products at unbeatable prices. Your one-stop shop for everything
+                you need.</p>
+            <div class="hero-actions">
+                <a href="{{ url_for('products') }}" class="btn btn-primary btn-lg">Shop Now</a>
+                <a href="{{ url_for('about') }}" class="btn btn-outline btn-lg">Learn More</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Categories Section -->
+<section class="section">
+    <div class="container">
+        <h2 class="section-title text-center">Shop by Category</h2>
+        <div class="category-grid"
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem;">
+            {% for category in categories %}
+            <a href="{{ url_for('products', category=category.id) }}" class="card text-center"
+                style="padding: 2rem; display: block; color: inherit; transition: transform 0.2s;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">
+                    {% if category.name == 'Electronics' %}📱
+                    {% elif category.name == 'Clothing' %}👕
+                    {% elif category.name == 'Books' %}📚
+                    {% elif category.name == 'Home & Garden' %}🏡
+                    {% elif category.name == 'Toys' %}🧸
+                    {% elif category.name == 'Sports' %}⚽
+                    {% elif category.name == 'Beauty' %}💄
+                    {% elif category.name == 'Automotive' %}🚗
+                    {% elif category.name == 'Music' %}🎵
+                    {% elif category.name == 'Gaming' %}🎮
+                    {% elif category.name == 'Pets' %}🐾
+                    {% else %}📦{% endif %}
+                </div>
+                <h3>{{ category.name }}</h3>
+                <p class="text-muted">{{ category.description }}</p>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products -->
+<section class="section" style="background-color: var(--gray-50);">
+    <div class="container">
+        <h2 class="section-title text-center">Featured Products</h2>
+        <div class="product-grid">
+            {% for product in products %}
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="{{ product.image_url or '/static/images/placeholder.jpg' }}" alt="{{ product.name }}">
+                    {% if product.stock < 10 %} <span class="badge badge-warning">Low Stock</span>
+                        {% endif %}
+                </div>
+                <div class="product-info">
+                    <h3 class="product-name">{{ product.name }}</h3>
+                    <p class="product-description">{{ product.description }}</p>
+                    <div class="product-footer">
+                        <span class="product-price">${{ "%.2f"|format(product.price) }}</span>
+                        <a href="{{ url_for('product_detail', product_id=product.id) }}"
+                            class="btn btn-primary">View</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center" style="margin-top: 3rem;">
+            <a href="{{ url_for('products') }}" class="btn btn-outline btn-lg">View All Products →</a>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="section">
+    <div class="container">
+        <div class="features-grid"
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
+            <div class="card text-center" style="padding: 2rem;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🚚</div>
+                <h3>Free Shipping</h3>
+                <p>On orders over $50</p>
+            </div>
+            <div class="card text-center" style="padding: 2rem;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🔒</div>
+                <h3>Secure Payment</h3>
+                <p>100% secure transactions</p>
+            </div>
+            <div class="card text-center" style="padding: 2rem;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">↩️</div>
+                <h3>Easy Returns</h3>
+                <p>30-day return policy</p>
+            </div>
+            <div class="card text-center" style="padding: 2rem;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">💬</div>
+                <h3>24/7 Support</h3>
+                <p>Dedicated customer service</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Newsletter Section -->
+<section class="section" style="background: linear-gradient(135deg, var(--primary) 0%, #764ba2 100%); color: white;">
+    <div class="container text-center">
+        <div style="max-width: 600px; margin: 0 auto;">
+            <h2 style="color: white; margin-bottom: 1rem;">Subscribe to Our Newsletter</h2>
+            <p style="color: rgba(255,255,255,0.9); margin-bottom: 2rem; font-size: 1.1rem;">Get the latest deals and
+                updates delivered to your inbox</p>
+            <form action="{{ url_for('contact') }}" method="POST"
+                style="display: flex; gap: 1rem; max-width: 400px; margin: 0 auto;">
+                <input type="email" name="email" placeholder="Enter your email" required
+                    style="flex: 1; padding: 0.75rem 1rem; border-radius: var(--radius-md); border: none; font-size: 1rem;">
+                <button type="submit" class="btn"
+                    style="background: white; color: var(--primary); font-weight: 600;">Subscribe</button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

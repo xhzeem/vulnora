@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1>Our Products</h1>
+        <p>Browse our wide selection of quality products</p>
+    </div>
+</div>
+
+<section class="section">
+    <div class="container">
+        <!-- Search and Filters -->
+        <div class="product-filters">
+            <form method="GET" action="{{ url_for('products') }}" class="filter-form-inline">
+                <input type="text" name="search" value="{{ search or '' }}" placeholder="Search products..."
+                    class="form-control filter-input">
+
+                <select name="category" class="form-control filter-select">
+                    <option value="">All Categories</option>
+                    {% for cat in categories %}
+                    <option value="{{ cat.id }}" {% if request.args.get('category')==cat.id|string %}selected{% endif
+                        %}>
+                        {{ cat.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+
+                <select name="sort" class="form-control filter-select">
+                    <option value="name">Sort by Name</option>
+                    <option value="price">Sort by Price</option>
+                    <option value="created_at DESC">Newest First</option>
+                </select>
+
+                <button type="submit" class="btn btn-primary filter-btn">Apply</button>
+            </form>
+        </div>
+
+        <!-- Products Grid -->
+        {% if products %}
+        <div class="product-grid">
+            {% for product in products %}
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="{{ product.image_url or '/static/images/placeholder.jpg' }}" alt="{{ product.name }}">
+                    {% if product.stock == 0 %}
+                    <span class="badge badge-danger">Out of Stock</span>
+                    {% elif product.stock < 10 %} <span class="badge badge-warning">Only {{ product.stock }} left</span>
+                        {% endif %}
+                </div>
+                <div class="product-info">
+                    <h3 class="product-name">{{ product.name }}</h3>
+                    <p class="product-description">{{ product.description[:100] }}...</p>
+                    <div class="product-footer">
+                        <span class="product-price">${{ "%.2f"|format(product.price) }}</span>
+                        <div class="product-actions">
+                            <a href="{{ url_for('product_detail', product_id=product.id) }}"
+                                class="btn btn-sm btn-primary">View</a>
+                            {% if session.user_id %}
+                            <a href="{{ url_for('add_to_wishlist', product_id=product.id) }}"
+                                class="btn btn-sm btn-outline">❤️</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if total_pages > 1 %}
+        <div class="pagination">
+            {% if current_page > 1 %}
+            <a href="{{ url_for('products', page=current_page-1, search=search) }}" class="btn btn-outline">←
+                Previous</a>
+            {% endif %}
+
+            <span class="page-info">Page {{ current_page }} of {{ total_pages }}</span>
+
+            {% if current_page < total_pages %} <a href="{{ url_for('products', page=current_page+1, search=search) }}"
+                class="btn btn-outline">Next →</a>
+                {% endif %}
+        </div>
+        {% endif %}
+        {% else %}
+        <div class="empty-state">
+            <h3>No products found</h3>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

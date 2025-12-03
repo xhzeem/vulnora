@@ -1,0 +1,80 @@
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: vulnerableshop_db
+    environment:
+      POSTGRES_DB: vulnerableshop
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    # Database is internal-only, no external port exposure
+    
+    # VOLUMES COMMENTED OUT - Data is temporary and will be lost on restart
+    # To persist database data, uncomment the lines below:
+    # volumes:
+    #   - postgres_data:/var/lib/postgresql/data
+    
+    networks:
+      - vulnshop_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Main VulnerableShop Application
+  web:
+    build: .
+    container_name: vulnerableshop_web
+    ports:
+      - "5555:5555"
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: vulnerableshop
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      INTERNAL_SERVICE_URL: http://internal-service:8080
+    
+    # VOLUMES COMMENTED OUT - Uploads and backups are temporary
+    # To persist uploaded files, git data, and backups, uncomment the lines below:
+    # volumes:
+    #   - ./static/uploads:/app/static/uploads
+    #   - ./.git:/app/.git:ro
+    #   - ./backups:/app/backups
+    
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - vulnshop_network
+    command: >
+      sh -c "
+        echo 'Waiting for database...' &&
+        sleep 5 &&
+        python init_db.py &&
+        python app.py
+      "
+
+  # Internal SSRF Target Service (only accessible from web container)
+  internal-service:
+    build: ./internal-service
+    container_name: vulnerableshop_internal
+    ports:
+      - "8888:8888"
+    environment:
+      SECRET_FLAG: "FLAG{ss4f_1nt3rn4l_4cc3ss}"
+      AWS_ACCESS_KEY: "AKIAIOSFODNN7EXAMPLE"
+      AWS_SECRET_KEY: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+      INTERNAL_API_KEY: "INTERNAL-SECRET-KEY-XYZ-12345"
+    networks:
+      - vulnshop_network
+
+networks:
+  vulnshop_network:
+    driver: bridge
+
+# VOLUMES COMMENTED OUT - No data persistence
+# To enable data persistence, uncomment the section below:
+# volumes:
+#   postgres_data:

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+<div class="section">
+    <div class="container">
+        <h1>Shared Favorites</h1>
+
+        <div class="alert alert-warning">
+            <p>You're viewing favorites for User ID: <strong>{{ user_id }}</strong></p>
+        </div>
+
+        {% if favorites %}
+        <div class="product-grid">
+            {% for item in favorites %}
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="{{ item.image_url or '/static/images/placeholder.jpg' }}" alt="{{ item.name }}">
+                </div>
+                <div class="product-info">
+                    <h3 class="product-name">{{ item.name }}</h3>
+                    <p class="product-description">{{ item.description[:80] }}...</p>
+                    <div class="product-footer">
+                        <span class="product-price">${{ "%.2f"|format(item.price) }}</span>
+                        <a href="{{ url_for('product_detail', product_id=item.product_id) }}"
+                            class="btn btn-sm btn-primary">View Product</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <h3>This user has no favorites</h3>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

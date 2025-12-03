@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1>Checkout</h1>
+    </div>
+</div>
+
+<section class="section">
+    <div class="container">
+        <div class="checkout-container">
+            <!-- Order Summary -->
+            <div class="checkout-items">
+                <h3>Order Items</h3>
+                <div class="checkout-items-list">
+                    {% for item in cart_items %}
+                    <div class="checkout-item">
+                        <img src="{{ item.image_url or '/static/images/placeholder.jpg' }}" alt="{{ item.name }}">
+                        <div class="item-details">
+                            <h4>{{ item.name }}</h4>
+                            <p>Quantity: {{ item.quantity }} × ${{ "%.2f"|format(item.price) }}</p>
+                        </div>
+                        <div class="item-price">${{ "%.2f"|format(item.subtotal) }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Checkout Form -->
+            <div class="checkout-form">
+                <h3>Complete Your Order</h3>
+
+                <form method="POST" action="{{ url_for('checkout') }}">
+                    <input type="hidden" name="total_amount" value="{{ total }}" id="total_amount">
+
+                    <div class="form-group">
+                        <label>Shipping Address</label>
+                        <textarea name="shipping_address" class="form-control" rows="3"
+                            required>123 Main St, City, State 12345</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Payment Method</label>
+                        <select name="payment_method" class="form-control" required>
+                            <option value="credit_card">Credit Card</option>
+                            <option value="paypal">PayPal</option>
+                            <option value="bank_transfer">Bank Transfer</option>
+                        </select>
+                    </div>
+
+                    <div class="order-summary-box">
+                        <div class="summary-row">
+                            <span>Subtotal:</span>
+                            <span id="display_total">${{ "%.2f"|format(total) }}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Shipping:</span>
+                            <span>$0.00</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>Total:</span>
+                            <span>${{ "%.2f"|format(total) }}</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg btn-block">Place Order</button>
+                </form>
+
+                <div class="coupon-section">
+                    <h4>Have a Coupon Code?</h4>
+                    <form method="POST" action="{{ url_for('apply_coupon') }}" class="coupon-form">
+                        <input type="text" name="coupon_code" placeholder="Enter coupon code" class="form-control">
+                        <button type="submit" class="btn btn-outline">Apply</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    function updateTotal() {
+        var totalField = document.getElementById('total_amount');
+        var displayTotal = document.getElementById('display_total');
+        // User can manipulate this in browser console
+        console.log('Current total:', totalField.value);
+    }
+    updateTotal();
+</script>
+{% endblock %}

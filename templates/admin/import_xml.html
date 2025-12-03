@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}XML Import - Admin{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <div class="admin-sidebar">
+        <h3>Admin Panel</h3>
+        <nav class="admin-nav">
+            <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('admin_users') }}">Users</a>
+            <a href="{{ url_for('admin_products') }}">Products</a>
+            <a href="{{ url_for('admin_health_check') }}">Health Check</a>
+            <a href="{{ url_for('admin_backup') }}">Backup</a>
+            <a href="{{ url_for('file_upload') }}">Upload Files</a>
+            <a href="{{ url_for('import_xml') }}" class="active">XML Import</a>
+            <a href="{{ url_for('ldap_search') }}">LDAP Search</a>
+            <a href="{{ url_for('home') }}">← Back to Site</a>
+        </nav>
+    </div>
+
+    <div class="admin-content">
+        <h1>Import Products from XML</h1>
+
+        <div class="alert alert-danger">
+            <pre>&lt;?xml version="1.0"?&gt;
+&lt;!DOCTYPE foo [&lt;!ENTITY xxe SYSTEM "file:///etc/passwd"&gt;]&gt;
+&lt;products&gt;
+  &lt;product&gt;
+    &lt;name&gt;&xxe;&lt;/name&gt;
+    &lt;price&gt;99.99&lt;/price&gt;
+  &lt;/product&gt;
+&lt;/products&gt;</pre>
+        </div>
+
+        <form method="POST" action="{{ url_for('import_xml') }}">
+            <div class="form-group">
+                <label>XML Data</label>
+                <textarea name="xml_data" class="form-control" rows="15" placeholder="Paste  XML here..."><?xml version="1.0"?>
+<products>
+  <product>
+    <name>Sample Product</name>
+    <price>99.99</price>
+  </product>
+</products></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Import XML</button>
+        </form>
+
+        {% if result %}
+        <div class="xml-result">
+            <h3>Parsed XML:</h3>
+            <pre>{{ result }}</pre>
+        </div>
+        {% endif %}
+
+        {% if error %}
+        <div class="alert alert-danger">
+            <h4>Error:</h4>
+            <pre>{{ error }}</pre>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

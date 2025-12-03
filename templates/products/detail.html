@@ -1,0 +1,176 @@
+{% extends "base.html"%}
+
+
+{% block content %}
+<div class="section">
+    <div class="container">
+        <div class="product-detail-container">
+            <!-- Product Image -->
+            <div class="product-detail-image">
+                <img src="{{ product.image_url or '/static/images/placeholder.jpg' }}" alt="{{ product.name }}">
+            </div>
+
+            <!-- Product Info -->
+            <div class="product-detail-info">
+                <h1>{{ product.name }}</h1>
+
+                {% if category %}
+                <a href="{{ url_for('products', category=category.id) }}" class="product-category-badge">
+                    {{ category.name }}
+                </a>
+                {% endif %}
+
+                <div class="product-price-large">${{ "%.2f"|format(product.price) }}</div>
+
+                <p class="product-description-full">{{ product.description }}</p>
+
+                <div class="product-stock">
+                    {% if product.stock > 0 %}
+                    <span class="stock-available">✓ In Stock ({{ product.stock }} available)</span>
+                    {% else %}
+                    <span class="stock-unavailable">✗ Out of Stock</span>
+                    {% endif %}
+                </div>
+
+                <!-- Add to Cart Form -->
+                {% if session.user_id and product.stock > 0 %}
+                <form method="POST" action="{{ url_for('add_to_cart', product_id=product.id) }}"
+                    class="add-to-cart-form">
+                    <div class="quantity-selector">
+                        <label for="quantity">Quantity:</label>
+                        <input type="number" id="quantity" name="quantity" value="1" min="1" max="{{ product.stock }}"
+                            class="form-control">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg">Add to Cart</button>
+                    <a href="{{ url_for('add_to_wishlist', product_id=product.id) }}" class="btn btn-outline btn-lg">Add
+                        to Wishlist</a>
+                </form>
+                {% elif not session.user_id %}
+                <div class="alert alert-info">
+                    <a href="{{ url_for('login') }}">Login</a> to purchase this product
+                </div>
+                {% endif %}
+
+                <div class="product-meta">
+                    <p><strong>Product ID:</strong> {{ product.id }}</p>
+                    <p><strong>Added:</strong> {{ product.created_at.strftime('%Y-%m-%d') if product.created_at else
+                        'N/A' }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Tabs -->
+        <div class="product-tabs">
+            <div class="tabs">
+                <button class="tab-button active" onclick="openTab(event, 'reviews')">Reviews</button>
+                <button class="tab-button" onclick="openTab(event, 'stock')">Check Stock</button>
+            </div>
+
+            <div id="reviews" class="tab-content active">
+                <h3>Customer Reviews</h3>
+
+                {% if session.user_id %}
+                <form method="POST" action="{{ url_for('add_review', product_id=product.id) }}" class="review-form"
+                    enctype="multipart/form-data">
+                    <h4>Write a Review</h4>
+                    <div class="form-group">
+                        <label for="rating">Rating:</label>
+                        <select name="rating" id="rating" class="form-control">
+                            <option value="5">⭐⭐⭐⭐⭐ (5 stars)</option>
+                            <option value="4">⭐⭐⭐⭐ (4 stars)</option>
+                            <option value="3">⭐⭐⭐ (3 stars)</option>
+                            <option value="2">⭐⭐ (2 stars)</option>
+                            <option value="1">⭐ (1 star)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="comment">Comment:</label>
+                        <textarea name="comment" id="comment" rows="4" class="form-control" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="file">Attach File (Optional):</label>
+                        <input type="file" name="file" id="file" class="form-control"
+                            accept=".svg,.html,.htm,.jpg,.png">
+                        <br>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Post Review</button>
+                </form>
+                {% else %}
+                <div class="alert alert-info">
+                    <a href="{{ url_for('login') }}">Login</a> to write a review
+                </div>
+                {% endif %}
+
+                <div class="reviews-list">
+                    {% if reviews %}
+                    {% for review in reviews %}
+                    <div class="review-item">
+                        <div class="review-header">
+                            <strong>{{ review.username }}</strong>
+                            <span class="review-rating">
+                                {% for i in range(review.rating) %}⭐{% endfor %}
+                            </span>
+                            <span class="review-date">{{ review.created_at.strftime('%Y-%m-%d') if review.created_at
+                                else '' }}</span>
+                        </div>
+                        <div class="review-comment">{{ review.comment|safe }}</div>
+
+                        {% if review.file_attachment %}
+                        <div class="review-attachment">
+                            <p><strong>Attachment:</strong></p>
+                            {% if review.file_attachment.endswith('.svg') %}
+                            <img src="{{ review.file_attachment }}" alt="Review attachment"
+                                style="max-width:300px; max-height:300px;">
+                            <br>
+                            <a href="{{ review.file_attachment }}" target="_blank">View SVG</a>
+                            {% elif review.file_attachment.endswith('.html') or review.file_attachment.endswith('.htm')
+                            %}
+                            <iframe src="{{ review.file_attachment }}"
+                                style="width:100%; height:200px; border:1px solid #ddd;"></iframe>
+                            <br>
+                            <a href="{{ review.file_attachment }}" target="_blank">Open HTML file</a>
+                            {% else %}
+                            <!-- Images and other files -->
+                            <img src="{{ review.file_attachment }}" alt="Review attachment" style="max-width:300px;">
+                            <br>
+                            <a href="{{ review.file_attachment }}" target="_blank">View attachment</a>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <p class="text-muted">No reviews yet. Be the first to review this product!</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div id="stock" class="tab-content">
+                <h3>Check Product Stock</h3>
+                <p>Enter a product name to check stock availability:</p>
+                <form method="GET" action="{{ url_for('check_stock') }}" class="stock-form">
+                    <input type="text" name="product_name" value="{{ product.name }}" class="form-control"
+                        placeholder="Product name">
+                    <button type="submit" class="btn btn-primary">Check Stock</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openTab(evt, tabName) {
+        var i, tabcontent, tabbuttons;
+        tabcontent = document.getElementsByClassName("tab-content");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].className = tabcontent[i].className.replace(" active", "");
+        }
+        tabbuttons = document.getElementsByClassName("tab-button");
+        for (i = 0; i < tabbuttons.length; i++) {
+            tabbuttons[i].className = tabbuttons[i].className.replace(" active", "");
+        }
+        document.getElementById(tabName).className += " active";
+        evt.currentTarget.className += " active";
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="section">
+    <div class="container" style="max-width: 800px;">
+        <div class="card">
+            <div class="card-header">
+                <h2 style="margin: 0;">📦 Product Stock Checker</h2>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-4">Enter a product name to check its current stock availability</p>
+
+                <form method="GET" action="{{ url_for('check_stock') }}" class="mb-4">
+                    <div class="flex gap-3">
+                        <input type="text" name="product_name" class="form-control" placeholder="Enter product name"
+                            value="{{ request.args.get('product_name', '') }}" style="flex: 1;">
+                        <button type="submit" class="btn btn-primary">Check Stock</button>
+                    </div>
+                </form>
+
+                {% if rendered_name %}
+                <div class="card mb-4" style="background: var(--gray-50);">
+                    <div class="card-body">
+                        <strong style="color: var(--gray-600);">Search Query:</strong>
+                        <div style="font-size: 1.1rem; margin-top: 0.5rem;">{{ rendered_name|safe }}</div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if product %}
+                <div class="card" style="background: var(--gray-50); border-color: var(--primary);">
+                    <div class="card-body">
+                        <h3 style="color: var(--primary); margin-bottom: 1.5rem;">
+                            Stock Information
+                        </h3>
+                        <div style="display: grid; gap: 1rem;">
+                            <div>
+                                <strong style="color: var(--gray-600);">Product Name:</strong>
+                                <div style="font-size: 1.1rem; margin-top: 0.25rem;">{{ product.name }}</div>
+                            </div>
+                            <div>
+                                <strong style="color: var(--gray-600);">Available Stock:</strong>
+                                <div
+                                    style="font-size: 1.5rem; font-weight: 700; margin-top: 0.25rem; 
+                                            color: {% if product.stock > 10 %}var(--success){% elif product.stock > 0 %}var(--warning){% else %}var(--danger){% endif %};">
+                                    {{ product.stock }} units
+                                </div>
+                            </div>
+                            <div>
+                                <strong style="color: var(--gray-600);">Price:</strong>
+                                <div
+                                    style="font-size: 1.25rem; font-weight: 600; margin-top: 0.25rem; color: var(--primary);">
+                                    ${{ "%.2f"|format(product.price) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% elif request.args.get('product_name') %}
+                <div class="alert alert-warning">
+                    <strong>No product found</strong> matching your search
+                </div>
+                {% endif %}
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('products') }}" class="btn btn-outline">← Back to Products</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

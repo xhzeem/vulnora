@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="section">
+    <div class="container" style="max-width: 900px;">
+        <div class="card">
+            <div class="card-header"
+                style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white;">
+                <div class="flex justify-between items-center">
+                    <h2 style="margin: 0;">🧾 Invoice</h2>
+                    <div style="text-align: right;">
+                        <div style="font-size: 0.875rem; opacity: 0.9;">Order Number</div>
+                        <div style="font-size: 1.25rem; font-weight: 700;">{{ order.order_number }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <!-- Order Information -->
+                <div class="card mb-4" style="background: var(--gray-50);">
+                    <div class="card-body">
+                        <h3 style="color: var(--primary); margin-bottom: 1.5rem;">Order Details</h3>
+                        <div
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+                            <div>
+                                <strong style="color: var(--gray-600); font-size: 0.875rem;">Order ID</strong>
+                                <div style="font-size: 1.1rem; margin-top: 0.25rem;">#{{ order.id }}</div>
+                            </div>
+                            <div>
+                                <strong style="color: var(--gray-600); font-size: 0.875rem;">Order Date</strong>
+                                <div style="font-size: 1.1rem; margin-top: 0.25rem;">
+                                    {{ order.created_at.strftime('%B %d, %Y') if order.created_at else 'N/A' }}
+                                </div>
+                            </div>
+                            <div>
+                                <strong style="color: var(--gray-600); font-size: 0.875rem;">Status</strong>
+                                <div style="margin-top: 0.25rem;">
+                                    <span
+                                        class="badge badge-{{ 'success' if order.status == 'delivered' else ('warning' if order.status == 'pending' else 'info') }}">
+                                        {{ order.status|upper }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Items -->
+                {% if order_items %}
+                <div class="mb-4">
+                    <h3 style="color: var(--gray-900); margin-bottom: 1rem;">Items</h3>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--gray-300);">
+                                <th
+                                    style="padding: 0.75rem; text-align: left; color: var(--gray-600); font-weight: 600;">
+                                    Product</th>
+                                <th
+                                    style="padding: 0.75rem; text-align: center; color: var(--gray-600); font-weight: 600;">
+                                    Quantity</th>
+                                <th
+                                    style="padding: 0.75rem; text-align: right; color: var(--gray-600); font-weight: 600;">
+                                    Price</th>
+                                <th
+                                    style="padding: 0.75rem; text-align: right; color: var(--gray-600); font-weight: 600;">
+                                    Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order_items %}
+                            <tr style="border-bottom: 1px solid var(--gray-200);">
+                                <td style="padding: 1rem;">{{ item.product_name }}</td>
+                                <td style="padding: 1rem; text-align: center;">{{ item.quantity }}</td>
+                                <td style="padding: 1rem; text-align: right;">${{ "%.2f"|format(item.price) }}</td>
+                                <td style="padding: 1rem; text-align: right; font-weight: 600;">${{
+                                    "%.2f"|format(item.subtotal) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+
+                <!-- Total -->
+                <div class="card"
+                    style="background: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%); border: 2px solid var(--primary);">
+                    <div class="card-body">
+                        <div class="flex justify-between items-center">
+                            <h3 style="margin: 0; color: var(--gray-900);">Total Amount</h3>
+                            <div style="font-size: 2rem; font-weight: 800; color: var(--primary);">
+                                ${{ "%.2f"|format(order.total_amount) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- IDOR Warning -->
+                <div class="alert alert-warning mt-4">
+                    <p><strong>⚠️ IDOR Vulnerability:</strong> This invoice can be accessed by anyone who knows the
+                        order ID</p>
+                    <p style="margin-bottom: 0;">This invoice belongs to order #{{ order.id }}</p>
+                </div>
+            </div>
+
+            <div class="card-footer">
+                <div class="flex gap-3">
+                    <a href="{{ url_for('order_history') }}" class="btn btn-outline">← Back to Orders</a>
+                    <button onclick="window.print()" class="btn btn-primary">🖨️ Print Invoice</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @media print {
+
+        .navbar,
+        .footer,
+        .card-footer,
+        .alert {
+            display: none !important;
+        }
+
+        .card {
+            box-shadow: none !important;
+            border: 1px solid #000 !important;
+        }
+    }
+</style>
+{% endblock %}

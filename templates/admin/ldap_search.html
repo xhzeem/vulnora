@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}LDAP Search - Admin{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <div class="admin-sidebar">
+        <h3>Admin Panel</h3>
+        <nav class="admin-nav">
+            <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('admin_users') }}">Users</a>
+            <a href="{{ url_for('admin_products') }}">Products</a>
+            <a href="{{ url_for('admin_health_check') }}">Health Check</a>
+            <a href="{{ url_for('admin_backup') }}">Backup</a>
+            <a href="{{ url_for('file_upload') }}">Upload Files</a>
+            <a href="{{ url_for('import_xml') }}">XML Import</a>
+            <a href="{{ url_for('ldap_search') }}" class="active">LDAP Search</a>
+            <a href="{{ url_for('home') }}">← Back to Site</a>
+        </nav>
+    </div>
+
+    <div class="admin-content">
+        <h1>LDAP User Search</h1>
+
+        <div class="alert alert-danger">
+            <p>This will bypass the filter and return all users!</p>
+        </div>
+
+        <form method="POST" action="{{ url_for('ldap_search') }}">
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" name="username" class="form-control" placeholder="Enter username">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+
+        {% if results %}
+        <div class="ldap-results">
+            <h3>Search Results</h3>
+            <p><strong>Filter used:</strong> <code>{{ results.filter }}</code></p>
+            <p class="text-danger">{{ results.warning }}</p>
+
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>UID</th>
+                        <th>Common Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in results.simulated_results %}
+                    <tr>
+                        <td>{{ user.uid }}</td>
+                        <td>{{ user.cn }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

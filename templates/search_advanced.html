@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+<div class="section">
+    <div class="container">
+        <h2>Advanced Regex Search</h2>
+
+        <div class="alert alert-danger">
+            <p>This search uses user-provided regex patterns without validation!</p>
+        </div>
+
+        <form method="POST" action="{{ url_for('search_advanced') }}">
+            <div class="form-group">
+                <label>Regex Pattern</label>
+                <input type="text" name="pattern" class="form-control"
+                    placeholder="Enter regex pattern (e.g., ^Smart.*)">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+
+        {% if error %}
+        <div class="alert alert-danger">
+            <p><strong>Error:</strong> {{ error }}</p>
+        </div>
+        {% endif %}
+
+        {% if matches is defined %}
+        <div class="search-results">
+            <p><strong>Found {{ matches|length }} matches in {{ "%.3f"|format(elapsed) }} seconds</strong></p>
+            <p>Pattern used: <code>{{ pattern }}</code></p>
+
+            {% if matches %}
+            <div class="product-grid">
+                {% for product in matches %}
+                <div class="product-card">
+                    <div class="product-info">
+                        <h4>{{ product.name }}</h4>
+                        <p>{{ product.description }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p>No products matched your pattern.</p>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

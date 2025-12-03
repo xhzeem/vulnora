@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+<div class="section">
+    <div class="container">
+        <h2>Compare Products</h2>
+
+        {% if notes %}
+        <div class="alert alert-info">
+            <p><strong>Comparison Notes:</strong></p>
+            <p>{{ notes|safe }}</p>
+        </div>
+        {% endif %}
+
+        {% if products %}
+        <div class="comparison-table">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        {% for product in products %}
+                        <th>{{ product.name }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Image</strong></td>
+                        {% for product in products %}
+                        <td><img src="{{ product.image_url or '/static/images/placeholder.jpg' }}"
+                                style="max-width:150px;"></td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td><strong>Price</strong></td>
+                        {% for product in products %}
+                        <td>${{ "%.2f"|format(product.price) }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td><strong>Description</strong></td>
+                        {% for product in products %}
+                        <td>{{ product.description }}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td><strong>Stock</strong></td>
+                        {% for product in products %}
+                        <td>{{ product.stock }} units</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td><strong>Actions</strong></td>
+                        {% for product in products %}
+                        <td><a href="{{ url_for('product_detail', product_id=product.id) }}"
+                                class="btn btn-sm btn-primary">View</a></td>
+                        {% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="alert alert-warning">
+        </div>
+        {% else %}
+        <p>No products selected for comparison.</p>
+        <p>Add products by using: <code>?products=1&products=2</code></p>
+        {% endif %}
+
+        <a href="{{ url_for('products') }}" class="btn btn-outline">Back to Products</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Health Check - Admin{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <div class="admin-sidebar">
+        <h3>Admin Panel</h3>
+        <nav class="admin-nav">
+            <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('admin_users') }}">Users</a>
+            <a href="{{ url_for('admin_products') }}">Products</a>
+            <a href="{{ url_for('admin_health_check') }}" class="active">Health Check</a>
+            <a href="{{ url_for('admin_backup') }}">Backup</a>
+            <a href="{{ url_for('file_upload') }}">Upload Files</a>
+            <a href="{{ url_for('home') }}">← Back to Site</a>
+        </nav>
+    </div>
+
+    <div class="admin-content">
+        <h1>System Health Check</h1>
+        <p>Check if internal services are running correctly</p>
+
+        <form method="POST" action="{{ url_for('admin_health_check') }}" class="admin-form">
+            <div class="form-group">
+                <label for="url">Service URL to Check</label>
+                <input type="text" id="url" name="url" value="{{ url or 'http://localhost:5000/' }}"
+                    class="form-control" placeholder="http://localhost:5000/admin/internal_secrets" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Check Service</button>
+        </form>
+
+        {% if result %}
+        <div class="health-check-result {{ 'success' if success else 'error' }}">
+            <h3>Response from {{ url }}:</h3>
+            <pre>{{ result }}</pre>
+        </div>
+        {% endif %}
+
+        <div class="quick-links">
+            <h4>Quick Test URLs:</h4>
+            <ul>
+                <li><code>http://localhost:5000/admin/internal_secrets</code> - Internal secrets (FLAG!)</li>
+                <li><code>http://localhost:5000/</code> - Homepage</li>
+                <li><code>http://example.com</code> - External site</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

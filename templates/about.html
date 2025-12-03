@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+    </div>
+</div>
+
+<section class="section">
+    <div class="container">
+        <div class="about-content">
+                security training.</p>
+
+            <h3>🎯 Purpose</h3>
+            <p>This application is part of a Capture The Flag (CTF) challenge environment where security researchers and
+                students can practice identifying and exploiting common web vulnerabilities in a safe, controlled
+                setting.</p>
+
+            <h3>⚠️ Warning</h3>
+            <p><strong>This application contains intentional security vulnerabilities and should NEVER be deployed to a
+                    production environment or exposed to the public internet.</strong></p>
+
+            <h3>🚩 Vulnerabilities Included</h3>
+            <ul>
+                <li>SQL Injection (Error-based and Blind)</li>
+                <li>Client-Side Template Injection (CSTI)</li>
+                <li>Cross-Site Request Forgery (CSRF)</li>
+                <li>Server-Side Request Forgery (SSRF)</li>
+                <li>Price Manipulation</li>
+                <li>Information Disclosure</li>
+                <li>And more...</li>
+            </ul>
+
+            <h3>📚 Learning Resources</h3>
+            <p>Use this application to learn about:</p>
+            <ul>
+                <li>OWASP Top 10 vulnerabilities</li>
+                <li>Web application security testing</li>
+                <li>Penetration testing methodologies</li>
+                <li>Secure coding practices (by understanding what NOT to do)</li>
+            </ul>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+  <!-- SVG with embedded script -->
+  <script type="text/javascript">
+    <![CDATA[
+      alert('XSS from embedded script in SVG!');
+    ]]>
+  </script>
+  <circle cx="100" cy="100" r="50" fill="blue"/>
+</svg>
